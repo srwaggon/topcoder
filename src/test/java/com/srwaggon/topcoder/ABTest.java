@@ -48,5 +48,9 @@ public class ABTest {
     return sum;
   }
 
-
+  @Test
+  public void testLargeCase() {
+    assertValid(30000, new AB().createString(100000, 30000));
+  }
+  
 }
