@@ -12,9 +12,14 @@ package com.srwaggon.topcoder;
   If there exists a string that satisfies the conditions, find and return any such string. Otherwise, return an empty string.
 */
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.PriorityQueue;
+
 public class AB {
 
-  private static class Pattern {
+  private static class Pattern implements Comparable<Pattern>{
 
     private char[] pattern;
 
@@ -25,62 +30,68 @@ public class AB {
       }
     }
 
+    public Pattern(char[] pattern) {
+      this.pattern = pattern;
+    }
+
     private int countPairs() {
-      int numBs = 0;
+      int numAs = 0;
       int sum = 0;
-      for (int i = pattern.length - 1; i >= 0; i--) {
-        if (pattern[i] == 'B') {
-          numBs++;
-        } else if (pattern[i] == 'A') {
-          sum += numBs;
+      for (int i = 0; i < pattern.length; i++) {
+        if (pattern[i] == 'A') {
+          numAs++;
+        } else if (pattern[i] == 'B') {
+          sum += numAs;
         }
       }
       return sum;
     }
 
-    private void swapForward(int index) {
-      if (index >= 0 && index < pattern.length-1) {
-        char c = pattern[index];
-        pattern[index] = pattern[index+1];
-        pattern[index+1] = c;
-      }
-    }
-
-    private void startB() {
-      if (pattern.length > 0) {
-        pattern[0] = 'B';
-      }
-    }
-
-    private boolean allBs() {
+    public Collection<Pattern> permute() {
+      LinkedList<Pattern> permutations = new LinkedList<Pattern>();
       for (int i = 0; i < pattern.length; i++) {
         if (pattern[i] != 'B') {
-          return false;
+          char[] permutedPattern = Arrays.copyOf(this.pattern, pattern.length);
+          permutedPattern[i] = 'B';
+          permutations.add(new Pattern(permutedPattern));
         }
       }
-      return true;
+      return permutations;
     }
 
     public String toString() {
       return new String(pattern);
     }
+
+    public int compareTo(Pattern other) {
+      return other.countPairs() - this.countPairs();
+    }
   }
 
-  public String createString(int length, int k) {
-    Pattern pattern = new Pattern(length);
 
-    while (!pattern.allBs()) {
-      if (pattern.countPairs() == k) {
-        return pattern.toString();
+  private PriorityQueue<Pattern> searchSpace = new PriorityQueue<Pattern>();
+
+  public String createString(int length, int k) {
+
+    searchSpace.add(new Pattern(length));
+
+    while (!searchSpace.isEmpty()) {
+      Pattern head = searchSpace.poll();
+      if (head.countPairs() == k) {
+        return head.toString();
       }
-      pattern.startB();
-      for (int i = 0; i < length; i++) {
-        pattern.swapForward(i);
-        if (pattern.countPairs() == k) {
-          return pattern.toString();
-        }
+      expandSearchSpace(k, head);
+    }
+
+    return "";
+  }
+
+  private void expandSearchSpace(int k, Pattern head) {
+    Collection<Pattern> permutations = head.permute();
+    for (Pattern pattern : permutations) {
+      if (pattern.countPairs() <= k ) {
+        searchSpace.addAll(permutations);
       }
     }
-    return "";
   }
 }

@@ -52,5 +52,5 @@ public class ABTest {
   public void testLargeCase() {
     assertValid(30000, new AB().createString(100000, 30000));
   }
-  
+
 }
