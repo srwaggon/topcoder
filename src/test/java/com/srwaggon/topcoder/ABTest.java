@@ -10,18 +10,15 @@ public class ABTest {
     assertEquals("", string);
   }
 
-  public void assertNotEmpty(String string) {
-    assertNotEquals("", string);
-  }
 
   @Test
   public void testBaseCase() {
-    assertNotEmpty(new AB().createString(3, 2));
+    assertValid(2, new AB().createString(3, 2));
   }
 
   @Test
   public void testZeroCase() {
-    assertNotEmpty(new AB().createString(2, 0));
+    assertValid(0, new AB().createString(2, 0));
   }
 
   @Test
@@ -31,9 +28,25 @@ public class ABTest {
 
   @Test
   public void testLongerCase() {
-    assertNotEmpty(new AB().createString(10, 12));
+    assertValid(12, new AB().createString(10, 12));
   }
 
+  private void assertValid(int k, String pattern) {
+    assertEquals(k, countPairs(pattern));
+  }
+
+  private static int countPairs(String pattern) {
+    int numBs = 0;
+    int sum = 0;
+    for (int i = pattern.length() - 1; i >= 0; i--) {
+      if (pattern.charAt(i) == 'B') {
+        numBs++;
+      } else if (pattern.charAt(i) == 'A') {
+        sum += numBs;
+      }
+    }
+    return sum;
+  }
 
 
 }
